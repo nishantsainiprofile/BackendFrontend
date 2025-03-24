@@ -13,8 +13,10 @@ import dotenv from 'dotenv';
 // app.use(express.json());
 dotenv.config(); // equivalent of require('dotenv').config()
 
-import StripeLib from 'stripe';
-const Stripe = new StripeLib({ apiKey: "sk_test_..." });
+import Stripe from 'stripe';
+const stripe = new Stripe("sk_test_...", {
+  apiVersion: "2024-04-10",
+})
 import PaytmChecksum from 'paytmchecksum';
 
 // const { default: MobileCharger } = require("../Frontend/my-app/src/ElectronicsComponent/MobileCharger");
@@ -614,7 +616,7 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
  app.post("/createPaymentIntent" , async(request , response)=>{
   const amount =request.body;
    try{
-   const PaymentIntent = await Stripe.paymentIntents.create({
+   const PaymentIntent = await stripe.paymentIntents.create({
            amount:amount*100,
           currency:"USD" ,
        })     
@@ -626,7 +628,7 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
   response.status(500).json({Information:"Internal error"});
   }
 }) 
-  console.log(process.env.Stripe_key);
+  // console.log(process.env.Stripe_key);
 
   const paytmMerchantKey = "YOUR_MERCHANT_KEY";
   const paytmMerchantId = "YOUR_MERCHANT_ID";
