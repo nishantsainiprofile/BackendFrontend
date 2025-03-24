@@ -9,14 +9,14 @@ import multer from "multer";
 import path from "path";
 import bcrypt from "bcrypt";
 
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 // app.use(express.json());
-dotenv.config(); // equivalent of require('dotenv').config()
+// dotenv.config(); // equivalent of require('dotenv').config()
 
-import Stripe from 'stripe';
-const stripe = new Stripe("sk_test_...", {
-  apiVersion: "2024-04-10",
-})
+// import Stripe from 'stripe';
+// const stripe = new Stripe("sk_test_...", {
+//   apiVersion: "2024-04-10",
+// })
 import PaytmChecksum from 'paytmchecksum';
 
 // const { default: MobileCharger } = require("../Frontend/my-app/src/ElectronicsComponent/MobileCharger");
@@ -613,22 +613,22 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
        }
         });
 
- app.post("/createPaymentIntent" , async(request , response)=>{
-  // const amount =request.body;
-  const { amount } = request.body;
-   try{
-   const PaymentIntent = await stripe.paymentIntents.create({
-           amount:amount*100,
-          currency:"USD" ,
-       })     
-    response.status(200).send({
-     clientSecret: PaymentIntent.client_secret
-     })
-  }catch(error){
-   console.log(error);
-  response.status(500).json({Information:"Internal error"});
-  }
-}) 
+//  app.post("/createPaymentIntent" , async(request , response)=>{
+//   // const amount =request.body;
+//   const { amount } = request.body;
+//    try{
+//    const PaymentIntent = await stripe.paymentIntents.create({
+//            amount:amount*100,
+//           currency:"USD" ,
+//        })     
+//     response.status(200).send({
+//      clientSecret: PaymentIntent.client_secret
+//      })
+//   }catch(error){
+//    console.log(error);
+//   response.status(500).json({Information:"Internal error"});
+//   }
+// }) 
   // console.log(process.env.Stripe_key);
 
   const paytmMerchantKey = "YOUR_MERCHANT_KEY";
