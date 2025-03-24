@@ -14,6 +14,9 @@ import dotenv from 'dotenv';
 dotenv.config(); // equivalent of require('dotenv').config()
 
 import StripeLib from 'stripe';
+if (!process.env.Stripe_key) {
+   throw new Error("Stripe_key env variable is missing!");
+}
 const Stripe = new StripeLib(process.env.Stripe_key);
 import PaytmChecksum from 'paytmchecksum';
 
