@@ -227,17 +227,19 @@ const RegisterSchema = new mongoose.Schema({
         laptopImage: String });
 
          const ModelBuildLaptop= mongoose.model(  "ModelBuildLaptop"  ,  BuildLaptopSchema);
-         const storage = multer.diskStorage({
-            destination: (req, file, cb) => {
-              cb(null, 'uploads/'); 
-            },
-            filename: (req, file, cb) => {
-              cb(null, Date.now() + path.extname(file.originalname));
-            }
-          });
+        //  const storage = multer.diskStorage({
+        //     destination: (req, file, cb) => {
+        //       cb(null, 'uploads/'); 
+        //     },
+        //     filename: (req, file, cb) => {
+        //       cb(null, Date.now() + path.extname(file.originalname));
+        //     }
+        //   });
+        const storage = multer.memoryStorage();
 
-          // const upload = multer({storage:storage});
-       const upload = multer({ dest: 'uploads/' });
+
+          const upload = multer({storage:storage});
+      //  const upload = multer({ dest: 'uploads/' });
        app.use('/uploads', express.static('uploads'));
      app.post("/api/BuildLaptop", upload.single('LaptopImage'), async (req, res) => {
       try {
@@ -245,7 +247,7 @@ const RegisterSchema = new mongoose.Schema({
        const data= req.body;  
         if (!req.file) {
         return res.status(400).json({ Information: "No image file uploaded." });
-        }  
+        } 
       const ModelBuildInformation = new ModelBuildLaptop({
                         series: data.series,
                         colour: data.colour,
@@ -334,16 +336,18 @@ const ModelChargingMobileBatteries = mongoose.model(
 );
 
 // Multer Storage Configuration
-const storage1 = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads1/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// const storage1 = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads1/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+const storage1 = multer.memoryStorage();
+const upload1 = multer({ storage: storage1 });
 
-const upload1 = multer({ dest: 'uploads1/' });
+// const upload1 = multer({ dest: 'uploads1/' });
 app.use('/uploads1', express.static('uploads1'));
 
 // API Endpoint
@@ -433,16 +437,19 @@ const ModelWatches = mongoose.model(
 );
 
 // Multer Storage Configuration
-const storage2 = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads2/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// const storage2 = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads2/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+const storage2 = multer.memoryStorage();
+const upload2 = multer({ storage: storage2 });
 
-const upload2 = multer({ dest: 'uploads2/' });
+
+// const upload2 = multer({ dest: 'uploads2/' });
 app.use('/uploads2', express.static('uploads2'));
 
 // API Endpoint
@@ -539,18 +546,20 @@ const ModelMobile = mongoose.model(
 );
 
 // Multer Storage Configuration
-const storage3 = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads3/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// const storage3 = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads3/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+const storage3 = multer.memoryStorage();
+const upload3 = multer({ storage: storage3 });
 
 
-const upload3 = multer({ dest: 'uploads3/' });
-app.use('/uploads3', express.static('uploads3'));
+// const upload3 = multer({ dest: 'uploads3/' });
+// app.use('/uploads3', express.static('uploads3'));
 
 
 // API Endpoint
