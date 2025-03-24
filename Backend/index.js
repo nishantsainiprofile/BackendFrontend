@@ -14,7 +14,7 @@ import dotenv from 'dotenv';
 dotenv.config(); // equivalent of require('dotenv').config()
 
 import StripeLib from 'stripe';
-const Stripe = new StripeLib("This_is_Secret_key");
+const Stripe = new StripeLib({ apiKey: "sk_test_..." });
 import PaytmChecksum from 'paytmchecksum';
 
 // const { default: MobileCharger } = require("../Frontend/my-app/src/ElectronicsComponent/MobileCharger");
