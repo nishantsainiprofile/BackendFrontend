@@ -614,7 +614,8 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
         });
 
  app.post("/createPaymentIntent" , async(request , response)=>{
-  const amount =request.body;
+  // const amount =request.body;
+  const { amount } = request.body;
    try{
    const PaymentIntent = await stripe.paymentIntents.create({
            amount:amount*100,
