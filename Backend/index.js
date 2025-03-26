@@ -8,6 +8,8 @@ import jsonwebtoken from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
 import bcrypt from "bcrypt";
+import cloudinary from "cloudinary";
+
 
 // import dotenv from 'dotenv';
 // app.use(express.json());
@@ -32,15 +34,22 @@ const connectToMongoDB = async () => {
 connectToMongoDB();
 
 const app=express();
-app.use(cors({origin:"http://localhost:3002",
-    credentials:true  } )
-)
+
+app.use(
+  cors({
+    origin: "https://electronic-based-project.vercel.app", // No trailing slash
+    // origin: '*', // No trailing slash
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 const JWT_secretkey= process.env.JWT_SECRET_KEY
-
 
 const RegisterSchema = new mongoose.Schema({
   name: {
@@ -82,10 +91,7 @@ const RegisterSchema = new mongoose.Schema({
     required: true
   }
 });
-
-
       const ModelRegister= mongoose.model("ModelRegister"     ,   RegisterSchema     );
-      
       app.post("/api/Register", async (request, response) => {
         try {
           const {    name,
@@ -135,18 +141,18 @@ const RegisterSchema = new mongoose.Schema({
           await RegisterInformation.save();
       
           // Return success response
-          response.status(200).json({ Information: "Register information saved successfully" });
+          // response.status(200).json({ Information: "Register information saved successfully" });
+          return response.status(201).json({ Information: "User registered successfully" });
         } catch (error) {
           console.error("Error in /api/Register:", error);
           response.status(500).json({ Information: "Internal server error" });
         }
       });
-      
-      
+    
       app.post("/api/Login", async (request, response) => {
         try {
           const { email, password } = request.body;
-      
+      console.log(email, password);
           // Check if the user exists in the database
           const RegisterInformation = await ModelRegister.findOne({ email });
           if (!RegisterInformation) {
@@ -160,7 +166,7 @@ const RegisterSchema = new mongoose.Schema({
           }
       
           // Create JWT token if login is successful
-          const token = jsonwebtoken.sign({ userId: RegisterInformation._id }, JWT_secretkey, { expiresIn: "1h" });
+          const token = jsonwebtoken.sign({ userId: RegisterInformation._id }, "This_is_Secret_Key", { expiresIn: "1h" });
       
           return response.status(200).json({ Information: "Login Successful", token });
         } catch (error) {
@@ -183,9 +189,6 @@ const RegisterSchema = new mongoose.Schema({
      return   response.status(500).json({session:false} )
      }
      })
-
-     
-         
         const BuildLaptopSchema= new mongoose.Schema({
         series: String,
         colour: String,
@@ -235,12 +238,16 @@ const RegisterSchema = new mongoose.Schema({
         //       cb(null, Date.now() + path.extname(file.originalname));
         //     }
         //   });
-        const storage = multer.memoryStorage();
-
-
-          const upload = multer({storage:storage});
+        cloudinary.config({
+          cloud_name: "dqu0pfrmz", 
+          api_key: "913811239978551", 
+          api_secret: "VbInJPhL6Q9O3zg29bg0Zd6OCOE"
+        });
+        
+        // const storage = multer.memoryStorage();
+          const upload = multer({storage:multer.memoryStorage()});
       //  const upload = multer({ dest: 'uploads/' });
-       app.use('/uploads', express.static('uploads'));
+      //  app.use('/uploads', express.static('uploads'));  
      app.post("/api/BuildLaptop", upload.single('LaptopImage'), async (req, res) => {
       try {
       // const { inputLaptop, inputLaptopPrice, inputLaptopInformation, inputLaptopBatteryDuration } = request.body;
@@ -288,15 +295,12 @@ const RegisterSchema = new mongoose.Schema({
                         itemWeight: data.itemweight,
                         laptopImage: req.file ? req.file.path : null,
                       });
-
-                         
                 await ModelBuildInformation.save();
                 res.status(200).json({ Information: "BuildLaptop information is saved successfully",   LaptopObject:ModelBuildInformation  });
             } catch (error) {
                 res.status(500).json({ Information: "Internal error", error: error.message });
             }
         });
-
    app.get("/api/Laptop" ,async (request, response)=>{
     try{
        const FindObject = await ModelBuildLaptop.find()
@@ -306,7 +310,6 @@ const RegisterSchema = new mongoose.Schema({
  response.status(500).json({Information:"Internal error "})
          }
        })
-               
 // Schema Definition
 const ElectronicsUploadSchema = new mongoose.Schema({
   Series: String,
@@ -328,13 +331,11 @@ const ElectronicsUploadSchema = new mongoose.Schema({
   ItemWeight: String,
   MobileBatteryImage: String, // Path to the uploaded image
 });
-
 // Model Definition
 const ModelChargingMobileBatteries = mongoose.model(
   "ModelChargingMobileBatteries",
   ElectronicsUploadSchema
 );
-
 // Multer Storage Configuration
 // const storage1 = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -344,12 +345,10 @@ const ModelChargingMobileBatteries = mongoose.model(
 //     cb(null, Date.now() + path.extname(file.originalname));
 //   },
 // });
-const storage1 = multer.memoryStorage();
-const upload1 = multer({ storage: storage1 });
-
+// const storage1 = multer.memoryStorage();
+const upload1 = multer({ storage: multer.memoryStorage() });
 // const upload1 = multer({ dest: 'uploads1/' });
-app.use('/uploads1', express.static('uploads1'));
-
+// app.use('/uploads1', express.static('uploads1'));
 // API Endpoint
 app.post("/api/ChargingMobile", upload1.single("MobileBatteryImage"), async (req, res) => {
   try {
@@ -435,7 +434,6 @@ const ModelWatches = mongoose.model(
   "ModelWatches",
   WatchesUploadSchema
 );
-
 // Multer Storage Configuration
 // const storage2 = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -445,23 +443,18 @@ const ModelWatches = mongoose.model(
 //     cb(null, Date.now() + path.extname(file.originalname));
 //   },
 // });
-const storage2 = multer.memoryStorage();
-const upload2 = multer({ storage: storage2 });
-
-
+// const storage2 = multer.memoryStorage();
+const upload2 = multer({ storage: multer.memoryStorage() });
 // const upload2 = multer({ dest: 'uploads2/' });
-app.use('/uploads2', express.static('uploads2'));
-
+// app.use('/uploads2', express.static('uploads2'));
 // API Endpoint
-app.post("/api/UploadWatches", upload2.single(" WatchImages"), async (req, res) => {
+app.post("/api/UploadWatches", upload2.single("WatchImages"), async (req, res) => {
   try {
     const data2 = req.body; // Assigning req.body to data1
      console.log(data2 );
-
     if (!req.file) {
       return res.status(400).json({ Information: "No image file uploaded." });
     }
-
     const WatchesModelInformation = new ModelWatches({
       Series: data2.Series,
       Price: data2.Price,
@@ -485,7 +478,6 @@ app.post("/api/UploadWatches", upload2.single(" WatchImages"), async (req, res) 
       ItemWeight: data2.ItemWeight,
       WatchImages: req.file ? req.file.path : null
     });
-
     // Save the information to MongoDB
      console.log(WatchesModelInformation  ,"this is WatchesModelInformation");
     await WatchesModelInformation.save();
@@ -507,7 +499,6 @@ app.post("/api/UploadWatches", upload2.single(" WatchImages"), async (req, res) 
        response.status(500).json({Information:"Internal error "})
        }
         });
-
   //-------------------------Mobile(API)----------------------------------------------------------------------------------
   
   // Schema Definition
@@ -554,14 +545,10 @@ const ModelMobile = mongoose.model(
 //     cb(null, Date.now() + path.extname(file.originalname));
 //   },
 // });
-const storage3 = multer.memoryStorage();
-const upload3 = multer({ storage: storage3 });
-
-
+// const storage3 = multer.memoryStorage();
+const upload3 = multer({ storage: multer.memoryStorage() });
 // const upload3 = multer({ dest: 'uploads3/' });
 // app.use('/uploads3', express.static('uploads3'));
-
-
 // API Endpoint
 app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) => {
   try {
@@ -571,7 +558,6 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
     if (!req.file) {
       return res.status(400).json({ Information: "No image file uploaded." });
    }
-
     const MobileModelInformation = new ModelMobile({
       Series: data3.Series,
       Price: data3.Price,
@@ -599,7 +585,6 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
       ItemWeight: data3.ItemWeight,
       MobileImages: req.file ? req.file.path : null
     });
-
     // Save the information to MongoDB
      console.log(MobileModelInformation  ,"this is WatchesModelInformation");
     await MobileModelInformation.save();
@@ -621,7 +606,6 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
        response.status(500).json({Information:"Internal error "})
        }
         });
-
 //  app.post("/createPaymentIntent" , async(request , response)=>{
 //   // const amount =request.body;
 //   const { amount } = request.body;
@@ -639,7 +623,6 @@ app.post("/api/UploadMobile", upload3.single("MobileImages"), async (req, res) =
 //   }
 // }) 
   // console.log(process.env.Stripe_key);
-
   const paytmMerchantKey = "YOUR_MERCHANT_KEY";
   const paytmMerchantId = "YOUR_MERCHANT_ID";
   const  paytmWebsite = "WEBSTAGING"; // Use "WEB" for live environment
@@ -728,7 +711,6 @@ app.post("/api/paytm/callback", (req, res) => {
     res.status(400).send("Checksum verification failed");
   }
 });
-
 // app.post("/api/search", (req, res) => {
 //   const { query } = req.body;
 //   console.log("this is ")
